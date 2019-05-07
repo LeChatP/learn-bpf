@@ -3,5 +3,6 @@ tags
 *.swp
 *.o
 *.ll
-memcpy_kprobe
+.vscode
+capable_kprobe
 memcpy_stat

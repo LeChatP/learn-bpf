@@ -1,4 +1,4 @@
-TARGETS := memcpy_kprobe 
+TARGETS := capable_kprobe 
 TARGETS += memcpy_stat
 
 # Generate file name-scheme based on TARGETS
@@ -8,7 +8,7 @@ KERN_OBJECTS = ${KERN_SOURCES:.c=.o}
 USER_OBJECTS = ${USER_SOURCES:.c=.o}
 
 # Notice: the kbuilddir can be redefined on make cmdline
-KERNEL ?= /lib/modules/$(shell uname -r)/build/
+KERNEL ?= /lib/modules/$(shell uname -r)/build
 
 CFLAGS := -O2 -Wall
 CFLAGS += -I ./
@@ -35,6 +35,7 @@ LINUXINCLUDE += -I$(KERNEL)/include
 LINUXINCLUDE += -I$(KERNEL)/include/uapi
 LINUXINCLUDE += -include $(KERNEL)/include/linux/kconfig.h
 LINUXINCLUDE += -I$(KERNEL)/include/generated/uapi
+LINUXINCLUDE += -include asm_goto_workaround.h
 
 all: $(TARGETS) $(KERN_OBJECTS)
 
@@ -58,6 +59,7 @@ $(KERN_OBJECTS): %.o: %.c bpf_helpers.h
 	    -Wno-compare-distinct-pointer-types \
 	    -Wno-gnu-variable-sized-type-not-at-end \
 	    -Wno-tautological-compare \
+		-include asm_goto_workaround.h \
 	    -O2 -emit-llvm -c $<
 	#now translate LLVM assembly to native assembly
 	$(LLC) -march=bpf -filetype=obj -o $@ ${@:.o=.ll}
