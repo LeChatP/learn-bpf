@@ -14,7 +14,8 @@ int main(int argc, char **argv)
 		return 1;
 	}
 	
-	int key, value;
+	int key;
+	u_int64_t value;
 	int res, prev_key = -1;
 	sleep(1);
 	while(bpf_map_get_next_key(map_fd[0], &prev_key, &key) == 0){
@@ -23,7 +24,7 @@ int main(int argc, char **argv)
 			printf("No value??\n");
         	continue;
 		}
-		printf("got pid : %d\tcaps : %d\n",key,value);
+		printf("got pid : %d\tcaps : %016lx\n",key,value);
 		prev_key=key;
 	}
 
